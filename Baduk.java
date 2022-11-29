@@ -50,6 +50,7 @@ public class Baduk {
 
     public static boolean isNeighbor(int[][] go, int x, int y) {
         int side = go[x - 1][y - 1]; // color of current stone
+        // The difference between array coordinates and Go board coordinates is 1
         if (side == 0) {
             return false; // if spot has no stone, we don't care about it
         }
@@ -66,25 +67,17 @@ public class Baduk {
         // set spot corresponding to piece on cluster map = 1 for the presence
         // of a piece
 
-        for (int k = 0; k < ctr;
-             k++) { // check board once for each tile b/c the cluster potentially grows each iteration
+        // check board once for each tile b/c the cluster potentially grows each iteration
+        for (int k = 0; k < ctr; k++) {
             for (int i = 0; i < 19; i++) {
                 for (int j = 0; j < 19; j++) {
 
                     // adjacency: searching for spots adjacent to current cluster
                     boolean adjacent = false; // 이웃 확인 0 돌 없음 1 이면 돌있음 만약에 모든 면이 둘러쌓여 있지 않으면 죽지 않음
-                    if (i > 0 && checkCluster[i - 1][j] == 1) {
-                        adjacent = true;
-                    }
-                    else if (i < 18 && checkCluster[i + 1][j] == 1) {
-                        adjacent = true;
-                    }
-                    else if (j > 0 && checkCluster[i][j - 1] == 1) {
-                        adjacent = true;
-                    }
-                    else if (j < 18 && checkCluster[i][j + 1] == 1) {
-                        adjacent = true;
-                    }
+                    if (i > 0 && checkCluster[i - 1][j] == 1) adjacent = true;
+                    else if (i < 18 && checkCluster[i + 1][j] == 1) adjacent = true;
+                    else if (j > 0 && checkCluster[i][j - 1] == 1) adjacent = true;
+                    else if (j < 18 && checkCluster[i][j + 1] == 1) adjacent = true;
 
                     // if we are adjacent to a cluster AND stone in original board is the same color
                     // we grow our cluster.
@@ -97,7 +90,7 @@ public class Baduk {
 
         // now that we have the cluster, let's check if it's surrounded.
         // instead of checking if the surroundings are the opposite color,
-        // check if they are empty. if NONE of surroundings are empty,'
+        // check if they are empty. if NONE of surroundings are empty,
         // the cluster MUST be surrounded by opposite color.
 
         for (int i = 0; i < 19; i++) {
@@ -183,4 +176,3 @@ public class Baduk {
         }
     }
 }
-
