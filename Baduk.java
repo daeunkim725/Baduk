@@ -132,7 +132,7 @@ public class Baduk {
 
         double pRadi = 0.43; // The Radius of the stones
         boolean gameOn = true;
-        int ctr = 0;
+        int ctr = 2;
 
         while (gameOn) {
             // if the user presses the 'a' key on their keyboard, the board will
@@ -140,34 +140,53 @@ public class Baduk {
             if (StdDraw.isKeyPressed(KeyEvent.VK_A)) {
                 StdDraw.clear();
                 drawBoard();
-                ctr = 0;
+                ctr = 2;
                 board = new int[19][19];
             }
             else {
 
                 if (StdDraw.isMousePressed()) {
 
-                    double Mx = StdDraw.mouseX();
-                    double My = StdDraw.mouseY();
-                    int Nx = (int) Math.round(Mx);
-                    int Ny = (int) Math.round(My);
+                    double mouseX = StdDraw.mouseX();
+                    double mouseY = StdDraw.mouseY();
+                    int newX = (int) Math.round(mouseX);
+                    int newY = (int) Math.round(mouseY);
 
                     // Only let the stones be placed inside the board (in-bound)
-                    boolean inBound = (Ny > 0 && Ny < 20) && (Nx > 0 && Nx < 20);
-                    if (inBound && board[Nx - 1][Ny - 1] == 0) {
+                    boolean inBound = (newY > 0 && newY < 20) && (newX > 0 && newX < 20);
+                    if (inBound && board[newX - 1][newY - 1] == 0) {
+
+                        if (ctr > 99) {
+                            Font font = new Font("Dialog", Font.BOLD, (int) 9.8);
+                            StdDraw.setFont(font);
+                        }
+                        else {
+                            Font font = new Font("Dialog", Font.BOLD, 11);
+                            StdDraw.setFont(font);
+                        }
 
                         // Drawing the played stones
                         if (ctr % 2 == 0) {
                             StdDraw.setPenColor(StdDraw.PRINCETON_ORANGE);
-                            StdDraw.filledCircle(Nx, Ny, pRadi);
-                            board[Nx - 1][Ny - 1] = 2; // Black (coordinates+1 = array)
+                            StdDraw.filledCircle(newX, newY, pRadi);
+                            board[newX - 1][newY - 1] = 2; // Black (coordinates+1 = array)
+
+                            // for (int i = 1; i < ctr; i++) {
+                            StdDraw.setPenColor(StdDraw.BLACK);
+                            StdDraw.text(newX, newY - 0.05, String.valueOf(ctr - 1));
+                            // }
                         }
                         else {
                             StdDraw.setPenColor(StdDraw.WHITE);
-                            StdDraw.filledCircle(Nx, Ny, pRadi);
+                            StdDraw.filledCircle(newX, newY, pRadi);
                             StdDraw.setPenColor(StdDraw.PRINCETON_ORANGE); // Black border
-                            StdDraw.circle(Nx, Ny, pRadi);
-                            board[Nx - 1][Ny - 1] = 1; // White
+                            StdDraw.circle(newX, newY, pRadi);
+                            board[newX - 1][newY - 1] = 1; // White
+
+                            // for (int i = 1; i < ctr; i++) {
+                            StdDraw.setPenColor(StdDraw.BLACK);
+                            StdDraw.text(newX, newY - 0.05, String.valueOf(ctr - 1));
+                            // }
                         }
                         ctr++;
                     }
