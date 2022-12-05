@@ -49,15 +49,15 @@ public class Baduk {
     }
 
     public static boolean isNeighbor(int[][] go, int x, int y) {
-        int side = go[x - 1][y - 1]; // color of current stone
+        int stoneColor = go[x - 1][y - 1]; // color of current stone
         // The difference between array coordinates and Go board coordinates is 1
-        if (side == 0) {
+        if (stoneColor == 0) {
             return false; // if spot has no stone, we don't care about it
         }
         int ctr = 0; // number of stones of current color (as defined by side)
         for (int i = 0; i < 19; i++) {
             for (int j = 0; j < 19; j++) {
-                if (go[i][j] == side) {
+                if (go[i][j] == stoneColor) {
                     ctr++; // increment if spot on board is current color
                 }
             }
@@ -81,7 +81,7 @@ public class Baduk {
 
                     // if we are adjacent to a cluster AND stone in original board is the same color
                     // we grow our cluster.
-                    if (go[i][j] == side && adjacent) {
+                    if (go[i][j] == stoneColor && adjacent) {
                         checkCluster[i][j] = 1;
                     }
                 }
@@ -115,7 +115,7 @@ public class Baduk {
     }
 
     public static void main(String[] args) {
-
+        int ctr = 2;
         // // Canvas size
         // int cX = 900;
         // int cY = 700;
@@ -132,7 +132,6 @@ public class Baduk {
 
         double pRadi = 0.43; // The Radius of the stones
         boolean gameOn = true;
-        int ctr = 2;
 
         while (gameOn) {
             // if the user presses the 'a' key on their keyboard, the board will
@@ -156,7 +155,9 @@ public class Baduk {
                     boolean inBound = (newY > 0 && newY < 20) && (newX > 0 && newX < 20);
                     if (inBound && board[newX - 1][newY - 1] == 0) {
 
-                        if (ctr > 99) {
+                        // if the number of stones played is bigger than 99, the
+                        // font decrease in size
+                        if (ctr > 100) {
                             Font font = new Font("Dialog", Font.BOLD, (int) 9.8);
                             StdDraw.setFont(font);
                         }
@@ -171,10 +172,9 @@ public class Baduk {
                             StdDraw.filledCircle(newX, newY, pRadi);
                             board[newX - 1][newY - 1] = 2; // Black (coordinates+1 = array)
 
-                            // for (int i = 1; i < ctr; i++) {
                             StdDraw.setPenColor(StdDraw.BLACK);
                             StdDraw.text(newX, newY - 0.05, String.valueOf(ctr - 1));
-                            // }
+
                         }
                         else {
                             StdDraw.setPenColor(StdDraw.WHITE);
@@ -183,13 +183,20 @@ public class Baduk {
                             StdDraw.circle(newX, newY, pRadi);
                             board[newX - 1][newY - 1] = 1; // White
 
-                            // for (int i = 1; i < ctr; i++) {
                             StdDraw.setPenColor(StdDraw.BLACK);
                             StdDraw.text(newX, newY - 0.05, String.valueOf(ctr - 1));
-                            // }
                         }
                         ctr++;
                     }
+                    // int[][] surrounded = new int[19][19];
+                    // for (int i = 0; i < 19; i++) {
+                    //     for (int j = 0; j < 19; j++) {
+                    //         if (isNeighbor(others[i][j], i + 1, j + 1)) {
+                    //             surrounded[i][j] = 1;
+                    //             others[i][j] = 0;
+                    //         }
+                    //     }
+                    // }
                 }
             }
         }
