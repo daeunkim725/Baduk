@@ -48,6 +48,32 @@ public class Baduk {
         }
     }
 
+    public static void drawPieces(int[][] board, int[][] nums) {
+        for (int i = 0; i < 19; i++) {
+            for (int j = 0; j < 19; j++) {
+                if (board[i][j] == 1) {
+                    StdDraw.setPenColor(StdDraw.WHITE);
+                    StdDraw.filledCircle(i + 1, j + 1, 0.43);
+                    StdDraw.setPenColor(StdDraw.PRINCETON_ORANGE); // Black border
+                    StdDraw.circle(i + 1, j + 1, 0.43);
+                    Font font = new Font("Dialog", Font.BOLD, (int) 9.8);
+                    StdDraw.setFont(font);
+                    StdDraw.setPenColor(StdDraw.BLACK);
+                    StdDraw.text(i + 1, j + 1 - 0.05, String.valueOf(nums[i][j]));
+                }
+                else if (board[i][j] == 2) {
+                    StdDraw.setPenColor(StdDraw.PRINCETON_ORANGE);
+                    StdDraw.filledCircle(i + 1, j + 1, 0.43);
+                    StdDraw.circle(i + 1, j + 1, 0.43);
+                    Font font = new Font("Dialog", Font.BOLD, (int) 9.8);
+                    StdDraw.setFont(font);
+                    StdDraw.setPenColor(StdDraw.BLACK);
+                    StdDraw.text(i + 1, j + 1 - 0.05, String.valueOf(nums[i][j]));
+                }
+            }
+        }
+    }
+
     public static boolean isNeighbor(int[][] go, int x, int y) {
         int stoneColor = go[x - 1][y - 1]; // color of current stone
         // The difference between array coordinates and Go board coordinates is 1
@@ -114,6 +140,16 @@ public class Baduk {
         return true;
     }
 
+    public static int[][] kill(int[][] go) {
+        int[][] toDie = new int[19][19];
+        for (int i = 0; i < 19; i++) {
+            for (int j = 0; j < 19; j++) {
+                if (isNeighbor(go, i + 1, j + 1)) toDie[i][j] = 1;
+            }
+        }
+        return toDie;
+    }
+
     public static void main(String[] args) {
         int ctr = 2;
         // // Canvas size
@@ -124,6 +160,8 @@ public class Baduk {
         int[][] board = new int[19][19];
         // 0: empty, 1: white, 2: black
 
+        int[][] order = new int[19][19];
+
         // StdDraw.setCanvasSize(cX, cY);
 
         // Scaling the Go board
@@ -133,6 +171,9 @@ public class Baduk {
         double pRadi = 0.43; // The Radius of the stones
         boolean gameOn = true;
 
+        Font font = new Font("Dialog", Font.BOLD, (int) 9.8);
+        StdDraw.setFont(font);
+
         while (gameOn) {
             // if the user presses the 'a' key on their keyboard, the board will
             // redraw and the counter will reset
@@ -141,6 +182,8 @@ public class Baduk {
                 drawBoard();
                 ctr = 2;
                 board = new int[19][19];
+                order = new int[19][19];
+
             }
             else {
 
@@ -155,50 +198,57 @@ public class Baduk {
                     boolean inBound = (newY > 0 && newY < 20) && (newX > 0 && newX < 20);
                     if (inBound && board[newX - 1][newY - 1] == 0) {
 
-                        // if the number of stones played is bigger than 99, the
-                        // font decrease in size
-                        if (ctr > 100) {
-                            Font font = new Font("Dialog", Font.BOLD, (int) 9.8);
-                            StdDraw.setFont(font);
-                        }
-                        else {
-                            Font font = new Font("Dialog", Font.BOLD, 11);
-                            StdDraw.setFont(font);
-                        }
-
                         // Drawing the played stones
                         if (ctr % 2 == 0) {
+
                             StdDraw.setPenColor(StdDraw.PRINCETON_ORANGE);
                             StdDraw.filledCircle(newX, newY, pRadi);
                             board[newX - 1][newY - 1] = 2; // Black (coordinates+1 = array)
+                            order[newX - 1][newY - 1] = ctr - 1;
 
                             StdDraw.setPenColor(StdDraw.BLACK);
                             StdDraw.text(newX, newY - 0.05, String.valueOf(ctr - 1));
 
                         }
                         else {
+
                             StdDraw.setPenColor(StdDraw.WHITE);
                             StdDraw.filledCircle(newX, newY, pRadi);
                             StdDraw.setPenColor(StdDraw.PRINCETON_ORANGE); // Black border
                             StdDraw.circle(newX, newY, pRadi);
                             board[newX - 1][newY - 1] = 1; // White
+                            order[newX - 1][newY - 1] = ctr - 1;
 
                             StdDraw.setPenColor(StdDraw.BLACK);
                             StdDraw.text(newX, newY - 0.05, String.valueOf(ctr - 1));
                         }
+
+                        // only need to redraw pieces after removing smthn
+                        boolean reDraw = false;
+                        
+                        // create an array of pieces to be removed
+                        int[][] tempAr = kill(board);
+                        for (int i = 0; i < 19; i++) {
+                            for (int j = 0; j < 19; j++) {
+                                if (tempAr[i][j] == 1) {
+                                    board[i][j] = 0;
+                                    order[i][j] = 0;
+                                    reDraw = true;
+                                }
+                            }
+                        }
+
+                        if (reDraw) {
+                            StdDraw.clear();
+                            drawBoard();
+                            drawPieces(board, order);
+                        }
+
                         ctr++;
                     }
-                    // int[][] surrounded = new int[19][19];
-                    // for (int i = 0; i < 19; i++) {
-                    //     for (int j = 0; j < 19; j++) {
-                    //         if (isNeighbor(others[i][j], i + 1, j + 1)) {
-                    //             surrounded[i][j] = 1;
-                    //             others[i][j] = 0;
-                    //         }
-                    //     }
-                    // }
                 }
             }
         }
     }
+}
 }
