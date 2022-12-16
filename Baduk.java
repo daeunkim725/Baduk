@@ -4,67 +4,31 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Baduk {
-    // Sprinkle -> stopwatch implementing rendering it differently
+    static int count = 0;
     public static Timer t;
 
     public static void CountDownTimer(int seconds) {
         t = new Timer();
         // schedule the timer
         t.schedule(new b(), seconds * 1000);
+
     }
 
     private static class b extends TimerTask {
         public void run() {
-            System.out.println("TIME OVER : YOU LOST");
+
+            if (count == 0) {
+                System.out.println("TIME OVER : YOU LOST");
+                count++;
+            }
             t.cancel();
         }
     }
 
-    // method that draw the Go board
-    public static void drawBoard() {
+    static void drawBoard() {
 
-        StdDraw.setXscale(-1, 21);
-        StdDraw.setYscale(-1, 21);
-
-        StdDraw.setPenRadius(0.003);
-        StdDraw.setPenColor(StdDraw.PRINCETON_ORANGE);
-
-        Font font = new Font("Dialog", Font.BOLD, 9);
-        StdDraw.setFont(font);
-
-
-        for (int i = 1; i <= 19; i++) {
-            StdDraw.line(i, 1, i, 19);
-            StdDraw.line(1, i, 19, i);
-        }
-
-        // Drawing the "flower dots"
-        double fRadi = 0.13; // The radius of the flower dots
-
-        StdDraw.filledCircle(4, 4, fRadi);
-        StdDraw.filledCircle(10, 4, fRadi);
-        StdDraw.filledCircle(16, 4, fRadi);
-        StdDraw.filledCircle(4, 10, fRadi);
-        StdDraw.filledCircle(10, 10, fRadi);
-        StdDraw.filledCircle(16, 10, fRadi);
-        StdDraw.filledCircle(4, 16, fRadi);
-        StdDraw.filledCircle(10, 16, fRadi);
-        StdDraw.filledCircle(16, 16, fRadi);
-
-        // Coordinate numbers on the sides
-        StdDraw.textRight(0.3, 1, "19");
-        int numY = 1;
-        for (int i = 1; i < 19; i++) {
-            numY += 1;
-            StdDraw.textRight(0.3, numY, String.valueOf(19 - i));
-        }
-
-        StdDraw.text(1, 19.7, "1");
-        int numX = 1;
-        for (int i = 1; i < 19; i++) {
-            numX += 1;
-            StdDraw.text(numX, 19.7, String.valueOf(i + 1));
-        }
+        // Calling the main() method
+        Baduk.main(null);
     }
 
     public static void drawPieces(int[][] board, int[][] nums) {
@@ -184,7 +148,7 @@ public class Baduk {
 
         // Scaling the Go board
 
-        drawBoard();
+        Gogo.drawBoard();
 
         double pRadi = 0.43; // The Radius of the stones
         boolean gameOn = true;
@@ -197,7 +161,7 @@ public class Baduk {
                 StdDraw.clear();
                 Font font = new Font("Dialog", Font.BOLD, 9);
                 StdDraw.setFont(font);
-                drawBoard();
+                Gogo.drawBoard();
                 ctr = 2;
                 board = new int[19][19];
                 order = new int[19][19];
@@ -227,7 +191,7 @@ public class Baduk {
                             StdDraw.setPenColor(StdDraw.BLACK);
                             StdDraw.text(newX, newY - 0.05, String.valueOf(ctr - 1));
 
-                            CountDownTimer(10);
+                            CountDownTimer(5);
                             System.out.println("WHITE: 30 Seconds Remaining");
                         }
                         else {
@@ -243,7 +207,7 @@ public class Baduk {
                             StdDraw.text(newX, newY - 0.05, String.valueOf(ctr - 1));
 
                             t.cancel();
-                            CountDownTimer(10);
+                            CountDownTimer(5);
                             System.out.println("BLACK: 30 Seconds Remaining");
 
                         }
@@ -264,9 +228,8 @@ public class Baduk {
                         }
 
                         if (reDraw) {
-                            t.cancel();
                             StdDraw.clear();
-                            drawBoard();
+                            Gogo.drawBoard();
                             drawPieces(board, order);
                         }
 
