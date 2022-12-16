@@ -1,19 +1,38 @@
 import java.awt.Font;
 import java.awt.event.KeyEvent;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Baduk {
+    // Sprinkle -> stopwatch implementing rendering it differently
+    public static Timer t;
+
+    public static void CountDownTimer(int seconds) {
+        t = new Timer();
+        // schedule the timer
+        t.schedule(new b(), seconds * 1000);
+    }
+
+    private static class b extends TimerTask {
+        public void run() {
+            System.out.println("TIME OVER : YOU LOST");
+            t.cancel();
+        }
+    }
+
     // method that draw the Go board
     public static void drawBoard() {
+
         StdDraw.setXscale(-1, 21);
         StdDraw.setYscale(-1, 21);
 
         StdDraw.setPenRadius(0.003);
         StdDraw.setPenColor(StdDraw.PRINCETON_ORANGE);
 
-        Font font = new Font("Dialog", Font.BOLD, 11);
+        Font font = new Font("Dialog", Font.BOLD, 9);
         StdDraw.setFont(font);
 
-        //
+
         for (int i = 1; i <= 19; i++) {
             StdDraw.line(i, 1, i, 19);
             StdDraw.line(1, i, 19, i);
@@ -56,7 +75,7 @@ public class Baduk {
                     StdDraw.filledCircle(i + 1, j + 1, 0.43);
                     StdDraw.setPenColor(StdDraw.PRINCETON_ORANGE); // Black border
                     StdDraw.circle(i + 1, j + 1, 0.43);
-                    Font font = new Font("Dialog", Font.BOLD, (int) 9.8);
+                    Font font = new Font("Dialog", Font.BOLD, 9);
                     StdDraw.setFont(font);
                     StdDraw.setPenColor(StdDraw.BLACK);
                     StdDraw.text(i + 1, j + 1 - 0.05, String.valueOf(nums[i][j]));
@@ -65,7 +84,7 @@ public class Baduk {
                     StdDraw.setPenColor(StdDraw.PRINCETON_ORANGE);
                     StdDraw.filledCircle(i + 1, j + 1, 0.43);
                     StdDraw.circle(i + 1, j + 1, 0.43);
-                    Font font = new Font("Dialog", Font.BOLD, (int) 9.8);
+                    Font font = new Font("Dialog", Font.BOLD, 9);
                     StdDraw.setFont(font);
                     StdDraw.setPenColor(StdDraw.BLACK);
                     StdDraw.text(i + 1, j + 1 - 0.05, String.valueOf(nums[i][j]));
@@ -99,7 +118,8 @@ public class Baduk {
                 for (int j = 0; j < 19; j++) {
 
                     // adjacency: searching for spots adjacent to current cluster
-                    boolean adjacent = false; // 이웃 확인 0 돌 없음 1 이면 돌있음 만약에 모든 면이 둘러쌓여 있지 않으면 죽지 않음
+                    boolean adjacent
+                            = false; // 이웃 확인 0 돌 없음 1 이면 돌있음 만약에 모든 면이 둘러쌓여 있지 않으면 죽지 않음
                     if (i > 0 && checkCluster[i - 1][j] == 1) adjacent = true;
                     else if (i < 18 && checkCluster[i + 1][j] == 1) adjacent = true;
                     else if (j > 0 && checkCluster[i][j - 1] == 1) adjacent = true;
@@ -151,18 +171,16 @@ public class Baduk {
     }
 
     public static void main(String[] args) {
+
         int ctr = 2;
         // // Canvas size
-        // int cX = 900;
-        // int cY = 700;
 
-        // Create 2D Array
+        // Create 2D Array to keep track of game pieces
         int[][] board = new int[19][19];
         // 0: empty, 1: white, 2: black
 
+        // create another 2d array to keep track of order pieces are placed
         int[][] order = new int[19][19];
-
-        // StdDraw.setCanvasSize(cX, cY);
 
         // Scaling the Go board
 
@@ -171,14 +189,14 @@ public class Baduk {
         double pRadi = 0.43; // The Radius of the stones
         boolean gameOn = true;
 
-        Font font = new Font("Dialog", Font.BOLD, (int) 9.8);
-        StdDraw.setFont(font);
-
         while (gameOn) {
             // if the user presses the 'a' key on their keyboard, the board will
             // redraw and the counter will reset
+
             if (StdDraw.isKeyPressed(KeyEvent.VK_A)) {
                 StdDraw.clear();
+                Font font = new Font("Dialog", Font.BOLD, 9);
+                StdDraw.setFont(font);
                 drawBoard();
                 ctr = 2;
                 board = new int[19][19];
@@ -188,7 +206,6 @@ public class Baduk {
             else {
 
                 if (StdDraw.isMousePressed()) {
-
                     double mouseX = StdDraw.mouseX();
                     double mouseY = StdDraw.mouseY();
                     int newX = (int) Math.round(mouseX);
@@ -197,6 +214,7 @@ public class Baduk {
                     // Only let the stones be placed inside the board (in-bound)
                     boolean inBound = (newY > 0 && newY < 20) && (newX > 0 && newX < 20);
                     if (inBound && board[newX - 1][newY - 1] == 0) {
+
 
                         // Drawing the played stones
                         if (ctr % 2 == 0) {
@@ -209,6 +227,8 @@ public class Baduk {
                             StdDraw.setPenColor(StdDraw.BLACK);
                             StdDraw.text(newX, newY - 0.05, String.valueOf(ctr - 1));
 
+                            CountDownTimer(10);
+                            System.out.println("WHITE: 30 Seconds Remaining");
                         }
                         else {
 
@@ -221,11 +241,16 @@ public class Baduk {
 
                             StdDraw.setPenColor(StdDraw.BLACK);
                             StdDraw.text(newX, newY - 0.05, String.valueOf(ctr - 1));
+
+                            t.cancel();
+                            CountDownTimer(10);
+                            System.out.println("BLACK: 30 Seconds Remaining");
+
                         }
 
                         // only need to redraw pieces after removing smthn
                         boolean reDraw = false;
-                        
+
                         // create an array of pieces to be removed
                         int[][] tempAr = kill(board);
                         for (int i = 0; i < 19; i++) {
@@ -239,6 +264,7 @@ public class Baduk {
                         }
 
                         if (reDraw) {
+                            t.cancel();
                             StdDraw.clear();
                             drawBoard();
                             drawPieces(board, order);
