@@ -1,0 +1,50 @@
+import java.awt.Font;
+
+public class Gogo {
+
+    public static void drawBoard() {
+
+        StdDraw.setXscale(-1, 21);
+        StdDraw.setYscale(-1, 21);
+
+        StdDraw.setPenRadius(0.003);
+        StdDraw.setPenColor(StdDraw.PRINCETON_ORANGE);
+
+        Font font = new Font("Dialog", Font.BOLD, 9);
+        StdDraw.setFont(font);
+
+
+        for (int i = 1; i <= 19; i++) {
+            StdDraw.line(i, 1, i, 19);
+            StdDraw.line(1, i, 19, i);
+        }
+
+        // Drawing the "flower dots"
+        double fRadi = 0.13; // The radius of the flower dots
+
+        StdDraw.filledCircle(4, 4, fRadi);
+        StdDraw.filledCircle(10, 4, fRadi);
+        StdDraw.filledCircle(16, 4, fRadi);
+        StdDraw.filledCircle(4, 10, fRadi);
+        StdDraw.filledCircle(10, 10, fRadi);
+        StdDraw.filledCircle(16, 10, fRadi);
+        StdDraw.filledCircle(4, 16, fRadi);
+        StdDraw.filledCircle(10, 16, fRadi);
+        StdDraw.filledCircle(16, 16, fRadi);
+
+        // Coordinate numbers on the sides
+        StdDraw.textRight(0.3, 1, "19");
+        int numY = 1;
+        for (int i = 1; i < 19; i++) {
+            numY += 1;
+            StdDraw.textRight(0.3, numY, String.valueOf(19 - i));
+        }
+
+        StdDraw.text(1, 19.7, "1");
+        int numX = 1;
+        for (int i = 1; i < 19; i++) {
+            numX += 1;
+            StdDraw.text(numX, 19.7, String.valueOf(i + 1));
+        }
+    }
+}
